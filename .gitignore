@@ -1,0 +1,27 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local database / backups
+*.sql
+*.dump
+*.tar.gz
+*.zip
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
