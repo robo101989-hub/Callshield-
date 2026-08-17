@@ -301,6 +301,8 @@ footer span {
   }
 }
 
+.risk-summary-enhanced { border-left: 4px solid #b45309; }
+
 .risk-summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

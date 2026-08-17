@@ -234,7 +234,7 @@ function App() {
 
               {result && (
                 <>
-                  <div className="risk-summary">
+                  <div className="risk-summary risk-summary-enhanced">
                     <div>
                       <span>Risk score</span>
                       <strong>{result.risk.score}/100</strong>
