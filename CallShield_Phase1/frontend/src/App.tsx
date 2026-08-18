@@ -163,6 +163,8 @@ function App() {
   const riskClass =
     result?.risk.classification?.toLowerCase().replace(/\s+/g, '-') ?? ''
 
+  const riskLevel = result ? (result.risk.score >= 75 ? 'CRITICAL' : result.risk.score >= 50 ? 'HIGH' : result.risk.score >= 25 ? 'MEDIUM' : 'LOW') : ''
+
   return (
     <main className="app">
       <header className="navbar">
@@ -237,7 +239,7 @@ function App() {
                   <div className="risk-summary risk-summary-enhanced">
                     <div>
                       <span>Risk score</span>
-                      <strong>{result.risk.score}/100</strong>
+                      <strong>{result.risk.score}/100</strong><small className="risk-level">{riskLevel} RISK</small>
                     </div>
 
                     <div>
