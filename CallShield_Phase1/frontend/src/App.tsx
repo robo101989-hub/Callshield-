@@ -269,6 +269,24 @@ function App() {
                     </div>
                   )}
 
+                  {result.recentReports.length > 0 && (
+                    <div className="recent-reports-panel">
+                      <h3>Recent Reports</h3>
+                      <div className="recent-reports-list">
+                        {result.recentReports.map((report, index) => (
+                          <div className="recent-report-item" key={`${report.createdAt}-${index}`}>
+                            <div>
+                              <strong>{report.category.replaceAll("_", " ")}</strong>
+                              <span>{report.severity}</span>
+                            </div>
+                            {report.description && <p>{report.description}</p>}
+                            <small>{new Date(report.createdAt).toLocaleString()}</small>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="intelligence-result">
                     <p>
                       <strong>Reports:</strong>{' '}

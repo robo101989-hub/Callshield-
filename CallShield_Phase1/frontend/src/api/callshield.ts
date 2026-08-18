@@ -10,6 +10,7 @@ export type NumberIntelligence = {
   reports: number
   uniqueReporters: number
   categoryCounts: Record<string, number>
+  recentReports: { category: string; severity: string; description: string | null; createdAt: string }[]
   campaigns: {
     id: string
     name: string
