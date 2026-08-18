@@ -255,6 +255,20 @@ function App() {
                     </div>
                   </div>
 
+                  {Object.keys(result.categoryCounts).length > 0 && (
+                    <div className="category-panel">
+                      <h3>Scam Categories</h3>
+                      <div className="category-list">
+                        {Object.entries(result.categoryCounts).map(([category, count]) => (
+                          <div className="category-item" key={category}>
+                            <span>{category.replaceAll("_", " ")}</span>
+                            <strong>{count}</strong>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="intelligence-result">
                     <p>
                       <strong>Reports:</strong>{' '}

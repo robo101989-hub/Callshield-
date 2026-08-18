@@ -23,6 +23,7 @@ export class NumbersService {
     }
 
     const uniqueReporters = new Set(number.reports.map((r) => r.reporterId).filter(Boolean)).size;
+    const categoryCounts = number.reports.reduce<Record<string, number>>((counts, report) => { counts[report.category] = (counts[report.category] ?? 0) + 1; return counts; }, {});
     const highSeverityReports = number.reports.filter(
       (r) => r.severity === 'HIGH' || r.severity === 'CRITICAL',
     ).length;
@@ -46,6 +47,7 @@ export class NumbersService {
       risk,
       reports: number.reports.length,
       uniqueReporters,
+      categoryCounts,
       campaigns: number.campaignLinks.map((x) => ({
         id: x.campaign.id,
         name: x.campaign.name,
