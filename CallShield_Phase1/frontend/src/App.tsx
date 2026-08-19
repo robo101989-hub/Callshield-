@@ -287,6 +287,23 @@ function App() {
                     </div>
                   )}
 
+                  {result.campaigns.length > 0 && (
+                    <div className="campaign-panel">
+                      <h3>Scam Campaigns</h3>
+                      <div className="campaign-list">
+                        {result.campaigns.map((campaign) => (
+                          <div className="campaign-item" key={campaign.id}>
+                            <div>
+                              <strong>{campaign.name}</strong>
+                              <span>{campaign.status}</span>
+                            </div>
+                            <small>Confidence: {campaign.confidence}%</small>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="intelligence-result">
                     <p>
                       <strong>Reports:</strong>{' '}

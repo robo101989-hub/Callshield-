@@ -54,6 +54,7 @@ export class NumbersService {
         id: x.campaign.id,
         name: x.campaign.name,
         status: x.campaign.status,
+        confidence: x.confidence,
       })),
       carrier: number.carrier,
       telecomRegion: number.telecomRegion,

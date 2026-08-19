@@ -15,6 +15,7 @@ export type NumberIntelligence = {
     id: string
     name: string
     status: string
+    confidence: number
   }[]
   carrier: string | null
   telecomRegion: string | null
