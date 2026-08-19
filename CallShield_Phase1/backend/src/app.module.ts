@@ -6,6 +6,7 @@ import { NumbersModule } from './modules/numbers/numbers.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { RiskModule } from './modules/risk/risk.module';
 import { BlocklistModule } from './modules/blocklist/blocklist.module';
+import { CampaignsModule } from './modules/campaigns/campaigns.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { BlocklistModule } from './modules/blocklist/blocklist.module';
     ReportsModule,
     RiskModule,
     BlocklistModule,
+    CampaignsModule,
   ],
   controllers: [HealthController],
   providers: [PrismaService],

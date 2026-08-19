@@ -23,12 +23,7 @@ const categories: { value: ReportCategory; label: string }[] = [
   { value: 'OTHER', label: 'Other' },
 ]
 
-const severities: Severity[] = [
-  'LOW',
-  'MEDIUM',
-  'HIGH',
-  'CRITICAL',
-]
+const severities: Severity[] = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']
 
 function App() {
   const [number, setNumber] = useState('')
@@ -38,11 +33,8 @@ function App() {
   const [actionLoading, setActionLoading] = useState('')
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
-
-  const [category, setCategory] =
-    useState<ReportCategory>('UPI_FRAUD')
-  const [severity, setSeverity] =
-    useState<Severity>('HIGH')
+  const [category, setCategory] = useState<ReportCategory>('UPI_FRAUD')
+  const [severity, setSeverity] = useState<Severity>('HIGH')
   const [description, setDescription] = useState('')
 
   const searchNumber = async () => {
@@ -60,14 +52,9 @@ function App() {
     setLoading(true)
 
     try {
-      const data = await getNumberIntelligence(value)
-      setResult(data)
+      setResult(await getNumberIntelligence(value))
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Unable to check this number.',
-      )
+      setError(err instanceof Error ? err.message : 'Unable to check this number.')
     } finally {
       setLoading(false)
     }
@@ -75,9 +62,7 @@ function App() {
 
   const refreshIntelligence = async () => {
     if (!searchedNumber) return
-
-    const data = await getNumberIntelligence(searchedNumber)
-    setResult(data)
+    setResult(await getNumberIntelligence(searchedNumber))
   }
 
   const reportNumber = async () => {
@@ -94,17 +79,11 @@ function App() {
         severity,
         description.trim() || undefined,
       )
-
-      setMessage('Report submitted successfully.')
+      setMessage('Report received. CallShield intelligence updated.')
       setDescription('')
-
       await refreshIntelligence()
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Unable to submit the report.',
-      )
+      setError(err instanceof Error ? err.message : 'Unable to submit the report.')
     } finally {
       setActionLoading('')
     }
@@ -118,18 +97,10 @@ function App() {
     setMessage('')
 
     try {
-      await blockNumber(
-        searchedNumber,
-        'Blocked from CallShield Phase 1',
-      )
-
-      setMessage('Number added to the CallShield blocklist.')
+      await blockNumber(searchedNumber, 'Blocked from CallShield')
+      setMessage('Number blocked by CallShield.')
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Unable to block this number.',
-      )
+      setError(err instanceof Error ? err.message : 'Unable to block this number.')
     } finally {
       setActionLoading('')
     }
@@ -143,62 +114,68 @@ function App() {
     setMessage('')
 
     try {
-      await whitelistNumber(
-        searchedNumber,
-        'Trusted by CallShield user',
-      )
-
-      setMessage('Number added to the CallShield whitelist.')
+      await whitelistNumber(searchedNumber, 'Trusted by CallShield user')
+      setMessage('Number added to your trusted list.')
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Unable to whitelist this number.',
-      )
+      setError(err instanceof Error ? err.message : 'Unable to whitelist this number.')
     } finally {
       setActionLoading('')
     }
   }
 
-  const riskClass =
-    result?.risk.classification?.toLowerCase().replace(/\s+/g, '-') ?? ''
+  const riskScore = result?.risk.score ?? 0
+  const riskLevel =
+    riskScore >= 75 ? 'CRITICAL' :
+    riskScore >= 50 ? 'HIGH' :
+    riskScore >= 25 ? 'MEDIUM' : 'LOW'
 
-  const riskLevel = result ? (result.risk.score >= 75 ? 'CRITICAL' : result.risk.score >= 50 ? 'HIGH' : result.risk.score >= 25 ? 'MEDIUM' : 'LOW') : ''
+  const riskClass = riskLevel.toLowerCase()
 
   return (
     <main className="app">
+      <div className="ambient ambient-one" />
+      <div className="ambient ambient-two" />
+
       <header className="navbar">
         <div className="brand">
-          <div className="brand-mark">C</div>
+          <div className="brand-mark">
+            <span>◈</span>
+          </div>
+
           <div>
-            <strong>CallShield</strong>
-            <span>Phone Intelligence</span>
+            <strong>CALLSHIELD</strong>
+            <span>REAL-TIME THREAT INTELLIGENCE</span>
           </div>
         </div>
 
-        <nav>
-          <a href="#home">Home</a>
-          <a href="#lookup">Number Lookup</a>
-          <a href="#report">Report</a>
-        </nav>
+        <div className="live-indicator">
+          <i />
+          PROTECTION ENGINE ONLINE
+        </div>
       </header>
 
-      <section id="home" className="hero-section">
+      <section className="hero-section">
         <div className="hero-content">
-          <div className="badge">CALLSHIELD INTELLIGENCE</div>
+          <div className="eyebrow">
+            <span>01</span>
+            DIGITAL SHIELD
+          </div>
 
           <h1>
-            Know who's calling.
+            Don't just answer.
             <br />
-            Stay protected.
+            <em>Know who is calling.</em>
           </h1>
 
-          <p>
-            Check a phone number against CallShield intelligence,
-            understand its risk level, and report suspicious calls.
+          <p className="hero-copy">
+            CallShield turns phone intelligence into real-time protection.
+            Check a number, understand the threat, and take action before
+            a scammer gets your trust.
           </p>
 
-          <div id="lookup" className="search-box">
+          <div className="search-box">
+            <div className="search-icon">⌕</div>
+
             <input
               type="tel"
               placeholder="+91 98765 43210"
@@ -209,60 +186,105 @@ function App() {
               }}
             />
 
-            <button
-              onClick={searchNumber}
-              disabled={loading}
-            >
-              {loading ? 'Checking...' : 'Check Number'}
+            <button onClick={searchNumber} disabled={loading}>
+              {loading ? 'ANALYZING...' : 'CHECK NUMBER'}
+              <span>→</span>
             </button>
           </div>
 
+          <div className="trust-line">
+            <span>●</span>
+            Intelligence-powered protection
+            <span>•</span>
+            Built to protect people
+          </div>
+
           {searchedNumber && (
-            <div className="result-card">
-              <span>Number checked</span>
-              <strong>{searchedNumber}</strong>
+            <section className="intelligence-card">
+              <div className="card-topline">
+                <div>
+                  <span className="label">NUMBER ANALYZED</span>
+                  <strong>{searchedNumber}</strong>
+                </div>
+
+                <div className={`status-pill ${riskClass}`}>
+                  <i />
+                  {riskLevel} RISK
+                </div>
+              </div>
+
+              {error && <div className="message error-message">{error}</div>}
+              {message && <div className="message success-message">{message}</div>}
 
               {loading && (
-                <p>Checking CallShield intelligence...</p>
-              )}
-
-              {error && (
-                <p className="error-message">{error}</p>
-              )}
-
-              {message && (
-                <p className="success-message">{message}</p>
+                <div className="analysis-state">
+                  <div className="scan-line" />
+                  <strong>Analyzing CallShield intelligence...</strong>
+                  <span>Checking reputation, reports and threat signals</span>
+                </div>
               )}
 
               {result && (
                 <>
-                  <div className="risk-summary risk-summary-enhanced">
-                    <div>
-                      <span>Risk score</span>
-                      <strong>{result.risk.score}/100</strong><small className="risk-level">{riskLevel} RISK</small>
+                  <div className="risk-display">
+                    <div className={`risk-orb ${riskClass}`}>
+                      <div className="orb-inner">
+                        <span>RISK</span>
+                        <strong>{riskScore}</strong>
+                        <small>/ 100</small>
+                      </div>
                     </div>
 
-                    <div>
-                      <span>Classification</span>
-                      <strong className={`risk-${riskClass}`}>
-                        {result.risk.classification}
-                      </strong>
+                    <div className="risk-details">
+                      <span className="label">THREAT ASSESSMENT</span>
+                      <h2>{riskLevel} RISK</h2>
+                      <p>
+                        {riskScore >= 75
+                          ? 'CallShield has detected strong indicators of malicious activity.'
+                          : riskScore >= 50
+                            ? 'Multiple signals indicate this number may be unsafe.'
+                            : 'No strong threat signal has been detected yet.'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="signal-grid">
+                    <div className="signal">
+                      <span>REPORTS</span>
+                      <strong>{result.reports}</strong>
                     </div>
 
-                    <div>
-                      <span>Status</span>
+                    <div className="signal">
+                      <span>CONFIDENCE</span>
+                      <strong>{result.intelligenceConfidence}</strong>
+                    </div>
+
+                    <div className="signal">
+                      <span>STATUS</span>
                       <strong>{result.status}</strong>
+                    </div>
+
+                    <div className="signal">
+                      <span>LOCATION</span>
+                      <strong>{result.location.value ?? 'UNKNOWN'}</strong>
                     </div>
                   </div>
 
                   {Object.keys(result.categoryCounts).length > 0 && (
-                    <div className="category-panel">
-                      <h3>Scam Categories</h3>
+                    <div className="intelligence-section">
+                      <div className="section-title">
+                        <span>THREAT PATTERNS</span>
+                        <small>COMMUNITY SIGNALS</small>
+                      </div>
+
                       <div className="category-list">
-                        {Object.entries(result.categoryCounts).map(([category, count]) => (
-                          <div className="category-item" key={category}>
-                            <span>{category.replaceAll("_", " ")}</span>
-                            <strong>{count}</strong>
+                        {Object.entries(result.categoryCounts).map(([name, count]) => (
+                          <div className="category-row" key={name}>
+                            <div>
+                              <i />
+                              <strong>{name.replaceAll('_', ' ')}</strong>
+                            </div>
+                            <span>{count} reports</span>
                           </div>
                         ))}
                       </div>
@@ -270,91 +292,73 @@ function App() {
                   )}
 
                   {result.recentReports.length > 0 && (
-                    <div className="recent-reports-panel">
-                      <h3>Recent Reports</h3>
-                      <div className="recent-reports-list">
+                    <div className="intelligence-section">
+                      <div className="section-title">
+                        <span>RECENT INTELLIGENCE</span>
+                        <small>LIVE REPORT HISTORY</small>
+                      </div>
+
+                      <div className="report-list">
                         {result.recentReports.map((report, index) => (
-                          <div className="recent-report-item" key={`${report.createdAt}-${index}`}>
-                            <div>
-                              <strong>{report.category.replaceAll("_", " ")}</strong>
-                              <span>{report.severity}</span>
+                          <div className="report-item" key={`${report.createdAt}-${index}`}>
+                            <div className="report-marker">
+                              <i />
                             </div>
-                            {report.description && <p>{report.description}</p>}
-                            <small>{new Date(report.createdAt).toLocaleString()}</small>
+
+                            <div className="report-content">
+                              <div className="report-heading">
+                                <strong>{report.category.replaceAll('_', ' ')}</strong>
+                                <span>{report.severity}</span>
+                              </div>
+
+                              {report.description && (
+                                <p>{report.description}</p>
+                              )}
+
+                              <small>
+                                {new Date(report.createdAt).toLocaleString()}
+                              </small>
+                            </div>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
 
-                  {result.campaigns.length > 0 && (
-                    <div className="campaign-panel">
-                      <h3>Scam Campaigns</h3>
-                      <div className="campaign-list">
-                        {result.campaigns.map((campaign) => (
-                          <div className="campaign-item" key={campaign.id}>
-                            <div>
-                              <strong>{campaign.name}</strong>
-                              <span>{campaign.status}</span>
-                            </div>
-                            <small>Confidence: {campaign.confidence}%</small>
-                          </div>
-                        ))}
-                      </div>
+                  <div className="intelligence-section">
+                    <div className="section-title">
+                      <span>AVAILABLE SIGNALS</span>
+                      <small>CALLSHIELD INTELLIGENCE GRAPH</small>
                     </div>
-                  )}
 
-                  <div className="intelligence-result">
-                    <p>
-                      <strong>Reports:</strong>{' '}
-                      {result.reports}
-                    </p>
-
-                    <p>
-                      <strong>Unique Reporters:</strong>{' '}
-                      {result.uniqueReporters}
-                    </p>
-
-                    <p>
-                      <strong>Intelligence Confidence:</strong>{' '}
-                      {result.intelligenceConfidence}
-                    </p>
-
-                    <p>
-                      <strong>Carrier:</strong>{' '}
-                      {result.carrier ?? 'Unknown'}
-                    </p>
-
-                    <p>
-                      <strong>Telecom Region:</strong>{' '}
-                      {result.telecomRegion ?? 'Unknown'}
-                    </p>
-
-                    <p>
-                      <strong>Location:</strong>{' '}
-                      {result.location.value ?? 'Unknown'}
-                    </p>
-
-                    <p>
-                      <strong>Location Confidence:</strong>{' '}
-                      {result.location.confidence}
-                    </p>
-
-                    {result.campaigns.length > 0 && (
+                    <div className="details-grid">
                       <div>
-                        <strong>Scam Campaigns:</strong>
-
-                        {result.campaigns.map((campaign) => (
-                          <p key={campaign.id}>
-                            {campaign.name} — {campaign.status}
-                          </p>
-                        ))}
+                        <span>Carrier</span>
+                        <strong>{result.carrier ?? 'Unknown'}</strong>
                       </div>
-                    )}
+
+                      <div>
+                        <span>Telecom Region</span>
+                        <strong>{result.telecomRegion ?? 'Unknown'}</strong>
+                      </div>
+
+                      <div>
+                        <span>Location Confidence</span>
+                        <strong>{result.location.confidence}</strong>
+                      </div>
+
+                      <div>
+                        <span>Unique Reporters</span>
+                        <strong>{result.uniqueReporters}</strong>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="actions">
-                    <h3>Protect this number</h3>
+                  <div className="protect-section">
+                    <div>
+                      <span className="label">PROTECTION ACTIONS</span>
+                      <h3>What do you want CallShield to do?</h3>
+                    </div>
 
                     <div className="action-buttons">
                       <button
@@ -362,9 +366,7 @@ function App() {
                         onClick={block}
                         disabled={actionLoading !== ''}
                       >
-                        {actionLoading === 'block'
-                          ? 'Blocking...'
-                          : 'Block Number'}
+                        {actionLoading === 'block' ? 'BLOCKING...' : 'BLOCK NUMBER'}
                       </button>
 
                       <button
@@ -372,32 +374,26 @@ function App() {
                         onClick={whitelist}
                         disabled={actionLoading !== ''}
                       >
-                        {actionLoading === 'whitelist'
-                          ? 'Saving...'
-                          : 'Whitelist Number'}
+                        {actionLoading === 'whitelist' ? 'SAVING...' : 'TRUST NUMBER'}
                       </button>
                     </div>
                   </div>
 
-                  <div id="report" className="report-panel">
-                    <h3>Report this number</h3>
+                  <div className="report-panel">
+                    <div className="section-title">
+                      <span>HELP THE NETWORK</span>
+                      <small>REPORT SUSPICIOUS ACTIVITY</small>
+                    </div>
 
                     <div className="form-grid">
                       <label>
-                        Scam category
+                        SCAM CATEGORY
                         <select
                           value={category}
-                          onChange={(e) =>
-                            setCategory(
-                              e.target.value as ReportCategory,
-                            )
-                          }
+                          onChange={(e) => setCategory(e.target.value as ReportCategory)}
                         >
                           {categories.map((item) => (
-                            <option
-                              key={item.value}
-                              value={item.value}
-                            >
+                            <option key={item.value} value={item.value}>
                               {item.label}
                             </option>
                           ))}
@@ -405,14 +401,10 @@ function App() {
                       </label>
 
                       <label>
-                        Severity
+                        SEVERITY
                         <select
                           value={severity}
-                          onChange={(e) =>
-                            setSeverity(
-                              e.target.value as Severity,
-                            )
-                          }
+                          onChange={(e) => setSeverity(e.target.value as Severity)}
                         >
                           {severities.map((item) => (
                             <option key={item} value={item}>
@@ -424,15 +416,13 @@ function App() {
                     </div>
 
                     <label>
-                      Description (optional)
+                      WHAT HAPPENED?
                       <textarea
                         rows={4}
                         maxLength={2000}
-                        placeholder="Describe what happened..."
+                        placeholder="Describe the suspicious activity..."
                         value={description}
-                        onChange={(e) =>
-                          setDescription(e.target.value)
-                        }
+                        onChange={(e) => setDescription(e.target.value)}
                       />
                     </label>
 
@@ -442,55 +432,63 @@ function App() {
                       disabled={actionLoading !== ''}
                     >
                       {actionLoading === 'report'
-                        ? 'Submitting...'
-                        : 'Submit Report'}
+                        ? 'SUBMITTING...'
+                        : 'SUBMIT INTELLIGENCE →'}
                     </button>
                   </div>
                 </>
               )}
-            </div>
+            </section>
           )}
         </div>
       </section>
 
-      <section className="features">
-        <div className="section-heading">
-          <span>PROTECTION TOOLS</span>
-          <h2>CallShield Phase 1</h2>
+      <section className="vision-section">
+        <div className="eyebrow">
+          <span>02</span>
+          THE CALLSHIELD NETWORK
         </div>
 
-        <div className="feature-grid">
+        <h2>
+          Protection gets stronger
+          <br />
+          <em>with every signal.</em>
+        </h2>
+
+        <div className="vision-grid">
           <article>
-            <div className="feature-icon">⌕</div>
-            <h3>Number Intelligence</h3>
-            <p>
-              Check risk score, classification, reports,
-              campaigns, and intelligence confidence.
-            </p>
+            <span>01</span>
+            <h3>Detect</h3>
+            <p>Identify suspicious numbers and emerging scam patterns.</p>
           </article>
 
           <article>
-            <div className="feature-icon">!</div>
-            <h3>Report a Number</h3>
-            <p>
-              Help the community identify suspicious and
-              fraudulent phone numbers.
-            </p>
+            <span>02</span>
+            <h3>Correlate</h3>
+            <p>Connect numbers, reports and campaigns into threat intelligence.</p>
           </article>
 
           <article>
-            <div className="feature-icon">✓</div>
-            <h3>Block & Whitelist</h3>
-            <p>
-              Manage numbers that should be blocked or trusted.
-            </p>
+            <span>03</span>
+            <h3>Protect</h3>
+            <p>Give people a clear warning and the right action at the right time.</p>
+          </article>
+
+          <article>
+            <span>04</span>
+            <h3>Investigate</h3>
+            <p>Preserve legitimate evidence and build investigation-ready incident records.</p>
           </article>
         </div>
       </section>
 
       <footer>
-        <strong>CallShield</strong>
-        <span>Phase 1 Intelligence Platform</span>
+        <div>
+          <strong>CALLSHIELD</strong>
+          <span>REAL-TIME DIGITAL PROTECTION</span>
+        </div>
+
+        <span>PHASE 1 · INTELLIGENCE ENGINE</span>
       </footer>
     </main>
   )
