@@ -235,11 +235,17 @@ function App() {
                       <span className="label">THREAT ASSESSMENT</span>
                       <h2>{riskLevel} RISK</h2>
                       <p>
-                        {riskScore >= 75
-                          ? 'CallShield has detected strong indicators of malicious activity.'
-                          : riskScore >= 50
-                            ? 'Multiple signals indicate this number may be unsafe.'
-                            : 'No strong threat signal has been detected yet.'}
+                        {result.blocked
+                          ? 'This number is blocked by CallShield based on available intelligence.'
+                          : result.trusted
+                            ? 'This number is marked as trusted by a CallShield user.'
+                            : riskScore >= 75
+                              ? 'CallShield has detected strong indicators of malicious activity.'
+                              : riskScore >= 50
+                                ? 'Multiple signals indicate this number may be unsafe.'
+                                : result.reports >= 3
+                                  ? 'Multiple community reports indicate suspicious activity.'
+                                  : 'No significant threat signals have been detected yet.'}
                       </p>
                     </div>
                   </div>
