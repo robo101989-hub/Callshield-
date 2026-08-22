@@ -124,12 +124,8 @@ function App() {
   }
 
   const riskScore = result?.risk.score ?? 0
-  const riskLevel =
-    riskScore >= 75 ? 'CRITICAL' :
-    riskScore >= 50 ? 'HIGH' :
-    riskScore >= 25 ? 'MEDIUM' : 'LOW'
-
-  const riskClass = riskLevel.toLowerCase()
+  const riskLevel = result?.risk.classification?.replace(/_RISK$/, "").replace(/_/g, " ") ?? "UNKNOWN"
+  const riskClass = riskLevel.toLowerCase().replace(/ /g, "-")
 
   return (
     <main className="app">
