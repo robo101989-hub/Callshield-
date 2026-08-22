@@ -1,11 +1,103 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["linux-arm64-openssl-3.0.x"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String     @id @default(cuid())
+  email       String?    @unique
+  phoneE164   String?    @unique
+  displayName String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  incidents   Incident[]
+  reports     Report[]
+}
+
+model PhoneNumber {
+  id                     String                 @id @default(cuid())
+  e164                   String                 @unique
+  status                 NumberStatus           @default(UNKNOWN)
+  carrier                String?
+  telecomRegion          String?
+  locationValue          String?
+  locationConfidence     LocationConfidence     @default(UNKNOWN)
+  locationSource         String?
+  intelligenceConfidence IntelligenceConfidence @default(LOW)
+  verifiedSignals        Int                    @default(0)
+  falsePositiveReports   Int                    @default(0)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  blocked                BlockedNumber?         @relation("PhoneNumberBlocked")
+  campaignLinks          CampaignNumber[]
+  reports                Report[]
+  whitelisted            WhitelistedNumber?     @relation("PhoneNumberWhitelisted")
+}
+
+model Report {
+  id            String         @id @default(cuid())
+  phoneNumberId String
+  reporterId    String?
+  category      ReportCategory
+  severity      Severity
+  description   String?
+  createdAt     DateTime       @default(now())
+  phoneNumber   PhoneNumber    @relation(fields: [phoneNumberId], references: [id], onDelete: Cascade)
+  reporter      User?          @relation(fields: [reporterId], references: [id])
+
+  @@index([phoneNumberId, createdAt])
+  @@index([category])
+}
+
+model ScamCampaign {
+  id          String           @id @default(cuid())
+  name        String
+  description String?
+  status      CampaignStatus   @default(EMERGING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  numbers     CampaignNumber[]
+}
+
+model CampaignNumber {
+  campaignId    String
+  phoneNumberId String
+  confidence    Int          @default(50)
+  createdAt     DateTime     @default(now())
+  campaign      ScamCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  phoneNumber   PhoneNumber  @relation(fields: [phoneNumberId], references: [id], onDelete: Cascade)
+
+  @@id([campaignId, phoneNumberId])
+}
+
+model BlockedNumber {
+  e164        String      @id
+  reason      String?
+  createdAt   DateTime    @default(now())
+  phoneNumber PhoneNumber @relation("PhoneNumberBlocked", fields: [e164], references: [e164], onDelete: Cascade, map: "BlockedNumber_phoneNumber_fkey")
+}
+
+model WhitelistedNumber {
+  e164        String      @id
+  note        String?
+  createdAt   DateTime    @default(now())
+  phoneNumber PhoneNumber @relation("PhoneNumberWhitelisted", fields: [e164], references: [e164], onDelete: Cascade, map: "WhitelistedNumber_phoneNumber_fkey")
+}
+
+model Incident {
+  id          String          @id @default(cuid())
+  userId      String?
+  category    ReportCategory?
+  title       String
+  description String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  user        User?           @relation(fields: [userId], references: [id])
 }
 
 enum NumberStatus {
@@ -55,94 +147,4 @@ enum Severity {
   MEDIUM
   HIGH
   CRITICAL
-}
-
-model User {
-  id           String   @id @default(cuid())
-  email        String?  @unique
-  phoneE164    String?  @unique
-  displayName  String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  reports      Report[]
-  incidents    Incident[]
-}
-
-model PhoneNumber {
-  id                     String                 @id @default(cuid())
-  e164                   String                 @unique
-  status                 NumberStatus            @default(UNKNOWN)
-  carrier                String?
-  telecomRegion          String?
-  locationValue          String?
-  locationConfidence    LocationConfidence      @default(UNKNOWN)
-  locationSource         String?
-  intelligenceConfidence IntelligenceConfidence @default(LOW)
-  verifiedSignals        Int                    @default(0)
-  falsePositiveReports   Int                    @default(0)
-  createdAt              DateTime               @default(now())
-  updatedAt              DateTime               @updatedAt
-  reports                Report[]
-  campaignLinks          CampaignNumber[]
-  blocked                BlockedNumber?       @relation("PhoneNumberBlocked")
-  whitelisted             WhitelistedNumber?   @relation("PhoneNumberWhitelisted")
-}
-
-model Report {
-  id           String         @id @default(cuid())
-  phoneNumberId String
-  reporterId   String?
-  category     ReportCategory
-  severity     Severity
-  description  String?
-  createdAt    DateTime       @default(now())
-  phoneNumber  PhoneNumber    @relation(fields: [phoneNumberId], references: [id], onDelete: Cascade)
-  reporter     User?          @relation(fields: [reporterId], references: [id], onDelete: SetNull)
-  @@index([phoneNumberId, createdAt])
-  @@index([category])
-}
-
-model ScamCampaign {
-  id          String            @id @default(cuid())
-  name        String
-  description String?
-  status      CampaignStatus    @default(EMERGING)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  numbers     CampaignNumber[]
-}
-
-model CampaignNumber {
-  campaignId    String
-  phoneNumberId String
-  confidence    Int       @default(50)
-  createdAt     DateTime  @default(now())
-  campaign      ScamCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  phoneNumber   PhoneNumber @relation(fields: [phoneNumberId], references: [id], onDelete: Cascade)
-  @@id([campaignId, phoneNumberId])
-}
-
-model BlockedNumber {
-  phoneNumber PhoneNumber @relation("PhoneNumberBlocked", fields: [e164], references: [e164], onDelete: Cascade, map: "BlockedNumber_phoneNumber_fkey")
-  e164      String   @id
-  reason    String?
-  createdAt DateTime @default(now())
-}
-
-model WhitelistedNumber {
-  phoneNumber PhoneNumber @relation("PhoneNumberWhitelisted", fields: [e164], references: [e164], onDelete: Cascade, map: "WhitelistedNumber_phoneNumber_fkey")
-  e164      String   @id
-  note      String?
-  createdAt DateTime @default(now())
-}
-
-model Incident {
-  id          String   @id @default(cuid())
-  userId      String?
-  category    ReportCategory?
-  title       String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
