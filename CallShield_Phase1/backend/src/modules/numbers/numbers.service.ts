@@ -93,7 +93,7 @@ export class NumbersService {
     return {
       number: number.e164,
 
-      status: number.status,
+      status: risk.classification,
 
       blocked: Boolean(number.blocked),
       blockReason: number.blocked?.reason ?? null,
