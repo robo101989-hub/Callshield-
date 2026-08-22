@@ -14,6 +14,8 @@ export class NumbersService {
       where: { e164 },
       include: {
         reports: true,
+        blocked: true,
+        whitelisted: true,
         campaignLinks: {
           include: {
             campaign: true,
@@ -61,6 +63,12 @@ export class NumbersService {
       number: number.e164,
 
       status: number.status,
+
+      blocked: Boolean(number.blocked),
+      blockReason: number.blocked?.reason ?? null,
+
+      trusted: Boolean(number.whitelisted),
+      trustNote: number.whitelisted?.note ?? null,
 
       risk,
 

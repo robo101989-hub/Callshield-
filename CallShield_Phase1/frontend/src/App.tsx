@@ -244,6 +244,20 @@ function App() {
                     </div>
                   </div>
 
+                  <div className="trust-status-grid">
+                    <div className={`trust-status ${result.blocked ? 'active-danger' : ''}`}>
+                      <span>BLOCKLIST</span>
+                      <strong>{result.blocked ? 'BLOCKED' : 'NOT BLOCKED'}</strong>
+                      {result.blockReason && <small>{result.blockReason}</small>}
+                    </div>
+
+                    <div className={`trust-status ${result.trusted ? 'active-safe' : ''}`}>
+                      <span>TRUST STATUS</span>
+                      <strong>{result.trusted ? 'TRUSTED' : 'NOT TRUSTED'}</strong>
+                      {result.trustNote && <small>{result.trustNote}</small>}
+                    </div>
+                  </div>
+
                   <div className="signal-grid">
                     <div className="signal">
                       <span>REPORTS</span>

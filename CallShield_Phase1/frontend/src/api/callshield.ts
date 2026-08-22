@@ -3,6 +3,10 @@ const API_BASE_URL = '/v1'
 export type NumberIntelligence = {
   number: string
   status: string
+  blocked: boolean
+  blockReason: string | null
+  trusted: boolean
+  trustNote: string | null
   risk: {
     score: number
     classification: string

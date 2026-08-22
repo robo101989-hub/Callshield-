@@ -1016,3 +1016,57 @@ footer div span {
     min-height: 160px;
   }
 }
+
+.trust-status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  margin-bottom: 1px;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 13px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.05);
+}
+
+.trust-status {
+  padding: 18px;
+  background: #0a0e12;
+}
+
+.trust-status span,
+.trust-status strong,
+.trust-status small {
+  display: block;
+}
+
+.trust-status span {
+  color: #55616c;
+  font-size: 8px;
+  letter-spacing: 0.14em;
+}
+
+.trust-status strong {
+  margin-top: 7px;
+  font-size: 12px;
+}
+
+.trust-status small {
+  margin-top: 6px;
+  color: #626e79;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.trust-status.active-danger strong {
+  color: #ff6978;
+}
+
+.trust-status.active-safe strong {
+  color: #4dffb0;
+}
+
+@media (max-width: 480px) {
+  .trust-status-grid {
+    grid-template-columns: 1fr;
+  }
+}
