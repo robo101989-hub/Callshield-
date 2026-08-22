@@ -15,6 +15,51 @@ export class CampaignsService {
     });
   }
 
+  async linkNumber(
+    campaignId: string,
+    body: { e164: string; confidence?: number },
+  ) {
+    const phoneNumber = await this.prisma.phoneNumber.upsert({
+      where: { e164: body.e164 },
+      update: {},
+      create: { e164: body.e164 },
+    });
+
+    const confidence = Math.max(
+      0,
+      Math.min(100, body.confidence ?? 50),
+    );
+
+    const link = await this.prisma.campaignNumber.upsert({
+      where: {
+        campaignId_phoneNumberId: {
+          campaignId,
+          phoneNumberId: phoneNumber.id,
+        },
+      },
+      update: {
+        confidence,
+      },
+      create: {
+        campaignId,
+        phoneNumberId: phoneNumber.id,
+        confidence,
+      },
+      include: {
+        campaign: true,
+        phoneNumber: true,
+      },
+    });
+
+    return {
+      campaignId: link.campaignId,
+      campaignName: link.campaign.name,
+      number: link.phoneNumber.e164,
+      confidence: link.confidence,
+      createdAt: link.createdAt,
+    };
+  }
+
   async listCampaigns() {
     const campaigns = await this.prisma.scamCampaign.findMany({
       orderBy: { updatedAt: 'desc' },

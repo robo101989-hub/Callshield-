@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CampaignsService } from './campaigns.service';
 
 @Controller('campaigns')
@@ -8,6 +8,14 @@ export class CampaignsController {
   @Get()
   listCampaigns() {
     return this.service.listCampaigns();
+  }
+
+  @Post(':campaignId/numbers')
+  linkNumber(
+    @Param('campaignId') campaignId: string,
+    @Body() body: { e164: string; confidence?: number },
+  ) {
+    return this.service.linkNumber(campaignId, body);
   }
 
   @Post()
