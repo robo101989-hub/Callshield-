@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
+import { RiskService } from '../risk/risk.service';
 
 @Injectable()
 export class CampaignsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly risk: RiskService,
+  ) {}
 
   async createCampaign(body: { name: string; description?: string; status?: string }) {
     return this.prisma.scamCampaign.create({
@@ -67,9 +71,22 @@ export class CampaignsService {
         numbers: {
           include: {
             phoneNumber: {
-              select: {
-                e164: true,
-                status: true,
+              include: {
+                reports: {
+                  select: {
+                    severity: true,
+                    category: true,
+                    createdAt: true,
+                    reporterId: true,
+                  },
+                },
+                blocked: true,
+                whitelisted: true,
+                campaignLinks: {
+                  select: {
+                    campaignId: true,
+                  },
+                },
               },
             },
           },
@@ -86,11 +103,26 @@ export class CampaignsService {
       createdAt: campaign.createdAt,
       updatedAt: campaign.updatedAt,
       numberCount: campaign.numbers.length,
-      numbers: campaign.numbers.map((item) => ({
-        number: item.phoneNumber.e164,
-        status: item.phoneNumber.status,
-        confidence: item.confidence,
-      })),
+      numbers: campaign.numbers.map((item) => {
+        const phone = item.phoneNumber;
+
+        const risk = this.risk.calculate({
+          reports: phone.reports,
+          campaignLinks: phone.campaignLinks.length,
+          verifiedSignals: phone.verifiedSignals,
+          blocked: Boolean(phone.blocked),
+          trusted: Boolean(phone.whitelisted),
+          falsePositiveReports: phone.falsePositiveReports,
+        });
+
+        return {
+          number: phone.e164,
+          status: risk.classification,
+          confidence: item.confidence,
+          riskScore: risk.score,
+          intelligenceConfidence: risk.confidence,
+        };
+      }),
     }));
   }
 }
