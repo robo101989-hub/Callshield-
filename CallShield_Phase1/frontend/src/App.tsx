@@ -99,6 +99,7 @@ function App() {
     try {
       await blockNumber(searchedNumber, 'Blocked from CallShield')
       setMessage('Number blocked by CallShield.')
+      await refreshIntelligence()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to block this number.')
     } finally {
@@ -116,6 +117,7 @@ function App() {
     try {
       await whitelistNumber(searchedNumber, 'Trusted by CallShield user')
       setMessage('Number added to your trusted list.')
+      await refreshIntelligence()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to whitelist this number.')
     } finally {
