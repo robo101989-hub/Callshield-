@@ -11,6 +11,8 @@ export type RiskInput = {
   reports: RiskReportInput[];
   campaignLinks: number;
   verifiedSignals: number;
+  blocked: boolean;
+  trusted: boolean;
   falsePositiveReports: number;
 };
 
@@ -87,16 +89,23 @@ export class RiskService {
 
     score = Math.max(0, Math.min(100, Math.round(score)));
 
+    // A confirmed block always overrides trust and calculated reputation.
+    if (input.blocked) {
+      score = 100;
+    }
+
     const classification =
-      score <= 20
-        ? 'SAFE'
-        : score <= 40
-          ? 'LOW_RISK'
-          : score <= 60
-            ? 'SUSPICIOUS'
-            : score <= 80
-              ? 'HIGH_RISK'
-              : 'DANGEROUS';
+      input.blocked
+        ? 'DANGEROUS'
+        : score <= 20
+          ? 'SAFE'
+          : score <= 40
+            ? 'LOW_RISK'
+            : score <= 60
+              ? 'SUSPICIOUS'
+              : score <= 80
+                ? 'HIGH_RISK'
+                : 'DANGEROUS';
 
     let confidence: 'LOW' | 'MEDIUM' | 'HIGH' = 'LOW';
 

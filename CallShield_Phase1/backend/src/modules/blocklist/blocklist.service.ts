@@ -6,10 +6,14 @@ export class BlocklistService {
   constructor(private readonly prisma: PrismaService) {}
 
   async block(e164: string, reason?: string) {
-    return this.prisma.blockedNumber.upsert({
-      where: { e164 },
-      update: { reason },
-      create: { e164, reason },
+    return this.prisma.$transaction(async (tx) => {
+      await tx.whitelistedNumber.deleteMany({ where: { e164 } });
+
+      return tx.blockedNumber.upsert({
+        where: { e164 },
+        update: { reason },
+        create: { e164, reason },
+      });
     });
   }
 
@@ -23,10 +27,14 @@ export class BlocklistService {
   }
 
   async whitelist(e164: string, note?: string) {
-    return this.prisma.whitelistedNumber.upsert({
-      where: { e164 },
-      update: { note },
-      create: { e164, note },
+    return this.prisma.$transaction(async (tx) => {
+      await tx.blockedNumber.deleteMany({ where: { e164 } });
+
+      return tx.whitelistedNumber.upsert({
+        where: { e164 },
+        update: { note },
+        create: { e164, note },
+      });
     });
   }
 

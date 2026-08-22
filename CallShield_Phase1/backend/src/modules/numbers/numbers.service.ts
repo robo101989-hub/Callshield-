@@ -40,6 +40,8 @@ export class NumbersService {
       campaignLinks: number.campaignLinks.length,
       verifiedSignals: number.verifiedSignals,
       falsePositiveReports: number.falsePositiveReports,
+      blocked: Boolean(number.blocked),
+      trusted: Boolean(number.whitelisted),
     });
 
     const recentReportItems = [...number.reports]
