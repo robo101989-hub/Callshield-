@@ -21,6 +21,10 @@ export enum Severity {
 }
 
 export class CreateReportDto {
+  @IsOptional()
+  @IsString()
+  reporterPhoneE164?: string;
+
   @IsEnum(ReportCategory)
   category!: ReportCategory;
 

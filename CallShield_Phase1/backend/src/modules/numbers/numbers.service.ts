@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma.service';
 import { RiskService } from '../risk/risk.service';
 
@@ -25,9 +25,38 @@ export class NumbersService {
     });
 
     if (!number) {
-      throw new NotFoundException(
-        'Number not found in CallShield intelligence',
-      );
+      const risk = this.risk.calculate({
+        reports: [],
+        campaignLinks: 0,
+        verifiedSignals: 0,
+        falsePositiveReports: 0,
+        blocked: false,
+        trusted: false,
+      });
+
+      return {
+        number: e164,
+        status: 'UNKNOWN',
+        blocked: false,
+        blockReason: null,
+        trusted: false,
+        trustNote: null,
+        risk,
+        reports: 0,
+        uniqueReporters: 0,
+        recentReports: [],
+        categoryCounts: {},
+        campaigns: [],
+        carrier: null,
+        telecomRegion: null,
+        location: {
+          value: null,
+          confidence: 'UNKNOWN',
+          source: null,
+        },
+        intelligenceConfidence: 'LOW',
+        signals: risk.signals,
+      };
     }
 
     const risk = this.risk.calculate({

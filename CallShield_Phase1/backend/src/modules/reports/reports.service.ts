@@ -13,9 +13,22 @@ export class ReportsService {
       create: { e164 },
     });
 
+    let reporterId: string | undefined;
+
+    if (dto.reporterPhoneE164) {
+      const reporter = await this.prisma.user.upsert({
+        where: { phoneE164: dto.reporterPhoneE164 },
+        update: {},
+        create: { phoneE164: dto.reporterPhoneE164 },
+      });
+
+      reporterId = reporter.id;
+    }
+
     const report = await this.prisma.report.create({
       data: {
         phoneNumberId: phoneNumber.id,
+        reporterId,
         category: dto.category,
         severity: dto.severity,
         description: dto.description,
