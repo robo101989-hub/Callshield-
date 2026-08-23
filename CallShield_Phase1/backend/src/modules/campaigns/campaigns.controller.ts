@@ -10,6 +10,11 @@ export class CampaignsController {
     return this.service.listCampaigns();
   }
 
+  @Get(':campaignId')
+  getCampaign(@Param('campaignId') campaignId: string) {
+    return this.service.getCampaign(campaignId);
+  }
+
   @Post(':campaignId/numbers')
   linkNumber(
     @Param('campaignId') campaignId: string,
