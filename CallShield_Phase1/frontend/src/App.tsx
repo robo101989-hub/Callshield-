@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
+import ProtectionDashboard from './ProtectionDashboard'
 import {
   blockNumber,
   getNumberIntelligence,
@@ -28,6 +29,7 @@ const categories: { value: ReportCategory; label: string }[] = [
 const severities: Severity[] = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']
 
 function App() {
+  const [view, setView] = useState<'protection' | 'intelligence'>('protection')
   const [number, setNumber] = useState('')
   const [searchedNumber, setSearchedNumber] = useState('')
   const [result, setResult] = useState<NumberIntelligence | null>(null)
@@ -168,8 +170,24 @@ function App() {
   const riskLevel = result?.risk.classification?.replace(/_RISK$/, "").replace(/_/g, " ") ?? "UNKNOWN"
   const riskClass = riskLevel.toLowerCase().replace(/ /g, "-")
 
+  const openIntelligence = (
+    selectedNumber: string,
+    intelligence: NumberIntelligence,
+  ) => {
+    setNumber(selectedNumber)
+    setSearchedNumber(selectedNumber)
+    setResult(intelligence)
+    setError('')
+    setMessage('')
+    setView('intelligence')
+  }
+
   return (
-    <main className="app">
+    <>
+      {view === 'protection' ? (
+        <ProtectionDashboard onOpenIntelligence={openIntelligence} />
+      ) : (
+        <main className="app">
       <div className="ambient ambient-one" />
       <div className="ambient ambient-two" />
 
@@ -682,7 +700,9 @@ function App() {
 
         <span>PHASE 1 · INTELLIGENCE ENGINE</span>
       </footer>
-    </main>
+        </main>
+      )}
+    </>
   )
 }
 
