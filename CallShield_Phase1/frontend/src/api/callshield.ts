@@ -138,3 +138,60 @@ export function whitelistNumber(
     },
   )
 }
+
+export type CampaignNumber = {
+  number: string
+  status: string
+  confidence: number
+  riskScore: number
+  intelligenceConfidence: string
+  reports: number
+}
+
+export type CampaignSummary = {
+  id: string
+  name: string
+  description: string | null
+  status: string
+  storedStatus: string
+  createdAt: string
+  updatedAt: string
+  numberCount: number
+  reportCount: number
+  recentReportCount: number
+  campaignRiskScore: number
+  highRiskNumbers: number
+  highConfidenceNumbers: number
+  categoryCounts: Record<string, number>
+  topCategories: { category: string; count: number }[]
+  severityCounts: Record<string, number>
+  firstSeen: string | null
+  lastSeen: string | null
+  intelligenceConfidence: string
+  numbers: CampaignNumber[]
+}
+
+export type CampaignReport = {
+  id: string
+  category: string
+  severity: string
+  description: string | null
+  createdAt: string
+  reporterId: string | null
+}
+
+export type CampaignDetail = CampaignSummary & {
+  recentReports: CampaignReport[]
+}
+
+export function getCampaigns(): Promise<CampaignSummary[]> {
+  return request<CampaignSummary[]>(`${API_BASE_URL}/campaigns`)
+}
+
+export function getCampaign(
+  campaignId: string,
+): Promise<CampaignDetail> {
+  return request<CampaignDetail>(
+    `${API_BASE_URL}/campaigns/${encodeURIComponent(campaignId)}`,
+  )
+}

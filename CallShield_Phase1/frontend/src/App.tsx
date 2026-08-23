@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import {
   blockNumber,
   getNumberIntelligence,
+  getCampaigns,
   submitReport,
   whitelistNumber,
+  type CampaignSummary,
   type NumberIntelligence,
   type ReportCategory,
   type Severity,
@@ -36,6 +38,43 @@ function App() {
   const [category, setCategory] = useState<ReportCategory>('UPI_FRAUD')
   const [severity, setSeverity] = useState<Severity>('HIGH')
   const [description, setDescription] = useState('')
+  const [campaigns, setCampaigns] = useState<CampaignSummary[]>([])
+  const [campaignsLoading, setCampaignsLoading] = useState(false)
+  const [campaignsError, setCampaignsError] = useState('')
+
+  useEffect(() => {
+    let active = true
+
+    const loadCampaigns = async () => {
+      setCampaignsLoading(true)
+      setCampaignsError('')
+
+      try {
+        const data = await getCampaigns()
+        if (active) {
+          setCampaigns(data)
+        }
+      } catch (err) {
+        if (active) {
+          setCampaignsError(
+            err instanceof Error
+              ? err.message
+              : 'Unable to load campaign intelligence.',
+          )
+        }
+      } finally {
+        if (active) {
+          setCampaignsLoading(false)
+        }
+      }
+    }
+
+    loadCampaigns()
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   const searchNumber = async () => {
     const value = number.trim().replace(/[^0-9+]/g, '')
@@ -459,6 +498,141 @@ function App() {
             </section>
           )}
         </div>
+      </section>
+
+      <section className="campaign-section">
+        <div className="eyebrow">
+          <span>03</span>
+          SCAM CAMPAIGN INTELLIGENCE
+        </div>
+
+        <div className="campaign-heading">
+          <div>
+            <h2>
+              See the attack
+              <br />
+              <em>behind the number.</em>
+            </h2>
+            <p>
+              CallShield correlates reported numbers into emerging scam
+              campaigns so investigators can understand patterns instead of
+              isolated calls.
+            </p>
+          </div>
+
+          <div className="campaign-live">
+            <i />
+            LIVE INTELLIGENCE
+          </div>
+        </div>
+
+        {campaignsError && (
+          <div className="message error-message">{campaignsError}</div>
+        )}
+
+        {campaignsLoading ? (
+          <div className="campaign-loading">
+            <div className="scan-line" />
+            <strong>Loading campaign intelligence...</strong>
+            <span>Correlating numbers, reports and threat signals</span>
+          </div>
+        ) : campaigns.length === 0 ? (
+          <div className="campaign-empty">
+            <strong>No scam campaigns detected yet.</strong>
+            <span>Campaign intelligence will appear as numbers become correlated.</span>
+          </div>
+        ) : (
+          <div className="campaign-grid">
+            {campaigns.map((campaign) => (
+              <article className="campaign-card" key={campaign.id}>
+                <div className="campaign-card-top">
+                  <div>
+                    <span className="label">CAMPAIGN</span>
+                    <h3>{campaign.name}</h3>
+                  </div>
+
+                  <span className={`campaign-status ${campaign.status.toLowerCase()}`}>
+                    {campaign.status}
+                  </span>
+                </div>
+
+                {campaign.description && (
+                  <p className="campaign-description">{campaign.description}</p>
+                )}
+
+                <div className="campaign-risk">
+                  <div>
+                    <span className="label">CAMPAIGN RISK</span>
+                    <strong>{campaign.campaignRiskScore}<small>/100</small></strong>
+                  </div>
+
+                  <div>
+                    <span className="label">CONFIDENCE</span>
+                    <strong>{campaign.intelligenceConfidence}</strong>
+                  </div>
+                </div>
+
+                <div className="campaign-stats">
+                  <div>
+                    <span>NUMBERS</span>
+                    <strong>{campaign.numberCount}</strong>
+                  </div>
+                  <div>
+                    <span>REPORTS</span>
+                    <strong>{campaign.reportCount}</strong>
+                  </div>
+                  <div>
+                    <span>HIGH RISK</span>
+                    <strong>{campaign.highRiskNumbers}</strong>
+                  </div>
+                  <div>
+                    <span>RECENT</span>
+                    <strong>{campaign.recentReportCount}</strong>
+                  </div>
+                </div>
+
+                <div className="campaign-numbers">
+                  <div className="section-title">
+                    <span>LINKED NUMBERS</span>
+                    <small>THREAT GRAPH</small>
+                  </div>
+
+                  {campaign.numbers.map((item) => (
+                    <div className="campaign-number" key={item.number}>
+                      <div>
+                        <strong>{item.number}</strong>
+                        <small>
+                          {item.reports} reports · {item.intelligenceConfidence} confidence
+                        </small>
+                      </div>
+
+                      <div className="campaign-number-risk">
+                        <strong>{item.riskScore}</strong>
+                        <span>{item.status.replaceAll('_', ' ')}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {campaign.topCategories.length > 0 && (
+                  <div className="campaign-categories">
+                    <div className="section-title">
+                      <span>TOP ATTACK PATTERNS</span>
+                      <small>REPORT CORRELATION</small>
+                    </div>
+
+                    {campaign.topCategories.slice(0, 3).map((item) => (
+                      <div className="campaign-category" key={item.category}>
+                        <span>{item.category.replaceAll('_', ' ')}</span>
+                        <strong>{item.count}</strong>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="vision-section">
