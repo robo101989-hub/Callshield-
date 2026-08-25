@@ -170,17 +170,6 @@ function App() {
   const riskLevel = result?.risk.classification?.replace(/_RISK$/, "").replace(/_/g, " ") ?? "UNKNOWN"
   const riskClass = riskLevel.toLowerCase().replace(/ /g, "-")
 
-  const openIntelligence = (
-    selectedNumber: string,
-    intelligence: NumberIntelligence,
-  ) => {
-    setNumber(selectedNumber)
-    setSearchedNumber(selectedNumber)
-    setResult(intelligence)
-    setError('')
-    setMessage('')
-    setView('intelligence')
-  }
 
   const openProtection = () => {
     setView('protection')
@@ -191,7 +180,7 @@ function App() {
   return (
     <>
       {view === 'protection' ? (
-        <ProtectionDashboard onOpenIntelligence={openIntelligence} />
+        <ProtectionDashboard />
       ) : (
         <main className="app">
       <button

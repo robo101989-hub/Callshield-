@@ -1,21 +1,95 @@
 import { useState } from 'react'
 import {
+  blockNumber,
   getNumberIntelligence,
+  submitReport,
+  whitelistNumber,
   type NumberIntelligence,
+  type ReportCategory,
+  type Severity,
 } from './api/callshield'
 
-type ProtectionDashboardProps = {
-  onOpenIntelligence: (number: string, result: NumberIntelligence) => void
-}
-
-function ProtectionDashboard({
-  onOpenIntelligence,
-}: ProtectionDashboardProps) {
+function ProtectionDashboard() {
   const [number, setNumber] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [checkedNumber, setCheckedNumber] = useState('')
   const [result, setResult] = useState<NumberIntelligence | null>(null)
+  const [actionLoading, setActionLoading] = useState('')
+  const [actionMessage, setActionMessage] = useState('')
+  const [actionError, setActionError] = useState('')
+  const [category, setCategory] = useState<ReportCategory>('UPI_FRAUD')
+  const [severity, setSeverity] = useState<Severity>('HIGH')
+  const [description, setDescription] = useState('')
+
+  const block = async () => {
+    if (!checkedNumber) return
+
+    setActionLoading('block')
+    setActionMessage('')
+    setActionError('')
+
+    try {
+      await blockNumber(checkedNumber, 'Blocked from CallShield')
+      setActionMessage('Number blocked by CallShield.')
+      const intelligence = await getNumberIntelligence(checkedNumber)
+      setResult(intelligence)
+    } catch (err) {
+      setActionError(
+        err instanceof Error ? err.message : 'Unable to block this number.',
+      )
+    } finally {
+      setActionLoading('')
+    }
+  }
+
+  const whitelist = async () => {
+    if (!checkedNumber) return
+
+    setActionLoading('whitelist')
+    setActionMessage('')
+    setActionError('')
+
+    try {
+      await whitelistNumber(checkedNumber, 'Trusted by CallShield user')
+      setActionMessage('Number added to your trusted list.')
+      const intelligence = await getNumberIntelligence(checkedNumber)
+      setResult(intelligence)
+    } catch (err) {
+      setActionError(
+        err instanceof Error ? err.message : 'Unable to trust this number.',
+      )
+    } finally {
+      setActionLoading('')
+    }
+  }
+
+  const reportNumber = async () => {
+    if (!checkedNumber) return
+
+    setActionLoading('report')
+    setActionMessage('')
+    setActionError('')
+
+    try {
+      await submitReport(
+        checkedNumber,
+        category,
+        severity,
+        description.trim() || undefined,
+      )
+      setActionMessage('Report received. CallShield intelligence updated.')
+      setDescription('')
+      const intelligence = await getNumberIntelligence(checkedNumber)
+      setResult(intelligence)
+    } catch (err) {
+      setActionError(
+        err instanceof Error ? err.message : 'Unable to submit the report.',
+      )
+    } finally {
+      setActionLoading('')
+    }
+  }
 
   const checkNumber = async () => {
     const value = number.trim().replace(/[^0-9+]/g, '')
@@ -171,17 +245,93 @@ function ProtectionDashboard({
             <div className="protection-result-actions">
               <button
                 className="danger-action"
-                onClick={() => onOpenIntelligence(checkedNumber, result)}
+                onClick={block}
+                disabled={actionLoading !== ''}
               >
-                VIEW FULL INTELLIGENCE
-                <span>→</span>
+                {actionLoading === 'block' ? 'BLOCKING...' : 'BLOCK NUMBER'}
               </button>
 
               <button
                 className="secondary-action"
-                onClick={() => onOpenIntelligence(checkedNumber, result)}
+                onClick={whitelist}
+                disabled={actionLoading !== ''}
               >
-                PROTECTION ACTIONS
+                {actionLoading === 'whitelist' ? 'SAVING...' : 'TRUST NUMBER'}
+              </button>
+            </div>
+
+            {(actionMessage || actionError) && (
+              <div className={`protection-action-message ${actionError ? 'is-error' : ''}`}>
+                {actionError || actionMessage}
+              </div>
+            )}
+
+            <div className="protection-report-form">
+              <div className="report-form-heading">
+                <span className="result-label">HELP THE NETWORK</span>
+                <strong>REPORT SUSPICIOUS ACTIVITY</strong>
+              </div>
+
+              <div className="report-form-grid">
+                <label>
+                  SCAM CATEGORY
+                  <select
+                    value={category}
+                    onChange={(event) =>
+                      setCategory(event.target.value as ReportCategory)
+                    }
+                    disabled={actionLoading !== ''}
+                  >
+                    <option value="UPI_FRAUD">UPI Fraud</option>
+                    <option value="BANK_FRAUD">Bank Fraud</option>
+                    <option value="POLICE_IMPERSONATION">Police Impersonation</option>
+                    <option value="KYC_FRAUD">KYC Fraud</option>
+                    <option value="LOAN_HARASSMENT">Loan Harassment</option>
+                    <option value="JOB_SCAM">Job Scam</option>
+                    <option value="INVESTMENT_SCAM">Investment Scam</option>
+                    <option value="DELIVERY_SCAM">Delivery Scam</option>
+                    <option value="TECH_SUPPORT">Tech Support</option>
+                    <option value="OTHER">Other</option>
+                  </select>
+                </label>
+
+                <label>
+                  SEVERITY
+                  <select
+                    value={severity}
+                    onChange={(event) =>
+                      setSeverity(event.target.value as Severity)
+                    }
+                    disabled={actionLoading !== ''}
+                  >
+                    <option value="LOW">LOW</option>
+                    <option value="MEDIUM">MEDIUM</option>
+                    <option value="HIGH">HIGH</option>
+                    <option value="CRITICAL">CRITICAL</option>
+                  </select>
+                </label>
+              </div>
+
+              <label>
+                WHAT HAPPENED?
+                <textarea
+                  rows={3}
+                  maxLength={2000}
+                  placeholder="Describe the suspicious activity..."
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value)}
+                  disabled={actionLoading !== ''}
+                />
+              </label>
+
+              <button
+                className="report-action"
+                onClick={reportNumber}
+                disabled={actionLoading !== ''}
+              >
+                {actionLoading === 'report'
+                  ? 'SUBMITTING...'
+                  : 'SUBMIT INTELLIGENCE →'}
               </button>
             </div>
           </section>
