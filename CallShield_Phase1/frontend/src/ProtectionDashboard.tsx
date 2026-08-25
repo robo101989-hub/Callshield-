@@ -415,18 +415,31 @@ function ProtectionDashboard() {
 
           <div className="incoming-avatar">◈</div>
 
-          <strong>+91 98765 43210</strong>
+          <strong>{checkedNumber || '+91 98765 43210'}</strong>
 
-          <span className="incoming-name">UNKNOWN CALLER</span>
+          <span className="incoming-name">
+            {result ? result.risk.classification : 'UNKNOWN CALLER'}
+          </span>
 
           <div className="incoming-risk">
             <span>THREAT ASSESSMENT</span>
-            <strong>ANALYZE BEFORE ANSWERING</strong>
+            <strong>
+              {result
+                ? `${result.risk.classification} · ${result.risk.score}/100`
+                : 'ANALYZE BEFORE ANSWERING'}
+            </strong>
           </div>
 
+          {result && (
+            <div className="incoming-signal">
+              <span>{result.reports} REPORTS</span>
+              <span>{result.intelligenceConfidence} CONFIDENCE</span>
+            </div>
+          )}
+
           <div className="incoming-actions">
-            <button disabled>BLOCK CALL</button>
-            <button disabled>ALLOW</button>
+            <button disabled={!result}>BLOCK CALL</button>
+            <button disabled={!result}>ALLOW</button>
           </div>
 
           <small className="incoming-disclaimer">
