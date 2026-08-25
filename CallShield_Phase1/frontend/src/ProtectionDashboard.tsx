@@ -14,6 +14,8 @@ function ProtectionDashboard({
   const [number, setNumber] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [checkedNumber, setCheckedNumber] = useState('')
+  const [result, setResult] = useState<NumberIntelligence | null>(null)
 
   const checkNumber = async () => {
     const value = number.trim().replace(/[^0-9+]/g, '')
@@ -28,7 +30,8 @@ function ProtectionDashboard({
 
     try {
       const intelligence = await getNumberIntelligence(value)
-      onOpenIntelligence(value, intelligence)
+      setCheckedNumber(value)
+      setResult(intelligence)
     } catch (err) {
       setError(
         err instanceof Error
@@ -104,6 +107,85 @@ function ProtectionDashboard({
           <span>●</span>
           Community-powered threat intelligence
         </div>
+
+        {result && (
+          <section className={`protection-result protection-result-${result.risk.classification.toLowerCase()}`}>
+            <div className="protection-result-header">
+              <div>
+                <span className="card-label">CALLSHIELD PROTECTION RESULT</span>
+                <strong>{checkedNumber}</strong>
+              </div>
+
+              <div className="protection-risk-badge">
+                <span>{result.risk.classification}</span>
+                <strong>{result.risk.score}/100</strong>
+              </div>
+            </div>
+
+            <div className="protection-result-body">
+              <div>
+                <span className="result-label">THREAT ASSESSMENT</span>
+                <h2>
+                  {result.risk.classification === 'DANGEROUS'
+                    ? 'Do not trust this caller.'
+                    : result.risk.classification === 'HIGH_RISK'
+                      ? 'High risk detected.'
+                      : 'No immediate high-risk signal detected.'}
+                </h2>
+
+                <p>
+                  {result.risk.classification === 'DANGEROUS'
+                    ? 'CallShield detected strong indicators of malicious activity from community reports and threat intelligence.'
+                    : 'CallShield has analyzed the available reputation, reports and threat signals for this number.'}
+                </p>
+              </div>
+
+              <div className="protection-result-stats">
+                <div>
+                  <span>CONFIDENCE</span>
+                  <strong>{result.intelligenceConfidence}</strong>
+                </div>
+
+                <div>
+                  <span>REPORTS</span>
+                  <strong>{result.reports}</strong>
+                </div>
+
+                <div>
+                  <span>CAMPAIGNS</span>
+                  <strong>{result.campaigns.length}</strong>
+                </div>
+              </div>
+            </div>
+
+            {result.campaigns.length > 0 && (
+              <div className="protection-campaign-signal">
+                <span>SCAM CAMPAIGN SIGNAL</span>
+                <strong>{result.campaigns[0].name}</strong>
+                <small>
+                  {result.campaigns[0].confidence}% confidence · {result.campaigns[0].status}
+                </small>
+              </div>
+            )}
+
+            <div className="protection-result-actions">
+              <button
+                className="danger-action"
+                onClick={() => onOpenIntelligence(checkedNumber, result)}
+              >
+                VIEW FULL INTELLIGENCE
+                <span>→</span>
+              </button>
+
+              <button
+                className="secondary-action"
+                onClick={() => onOpenIntelligence(checkedNumber, result)}
+              >
+                PROTECTION ACTIONS
+              </button>
+            </div>
+          </section>
+        )}
       </section>
 
       <section className="protection-grid">
@@ -161,12 +243,18 @@ function ProtectionDashboard({
 
       <section className="protection-call-preview">
         <div>
-          <span className="card-label">PROTECTION PREVIEW</span>
+          <span className="card-label">LIVE PROTECTION SIMULATION</span>
           <h2>Incoming call intelligence</h2>
           <p>
-            The Android protection layer will use this same intelligence
-            engine to evaluate calls in real time.
+            Check a number above to simulate how the CallShield protection
+            engine will evaluate an incoming call before you answer.
           </p>
+
+          <div className="call-preview-meta">
+            <span>PHASE 1</span>
+            <span>THREAT ENGINE</span>
+            <span>REAL INTELLIGENCE</span>
+          </div>
         </div>
 
         <div className="incoming-preview">
@@ -175,7 +263,11 @@ function ProtectionDashboard({
             <i />
           </div>
 
+          <div className="incoming-avatar">◈</div>
+
           <strong>+91 98765 43210</strong>
+
+          <span className="incoming-name">UNKNOWN CALLER</span>
 
           <div className="incoming-risk">
             <span>THREAT ASSESSMENT</span>
@@ -183,9 +275,14 @@ function ProtectionDashboard({
           </div>
 
           <div className="incoming-actions">
-            <button disabled>BLOCK</button>
+            <button disabled>BLOCK CALL</button>
             <button disabled>ALLOW</button>
           </div>
+
+          <small className="incoming-disclaimer">
+            Simulation only · Android call protection will use this
+            intelligence layer in a future native integration.
+          </small>
         </div>
       </section>
 

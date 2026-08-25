@@ -2396,3 +2396,183 @@ footer div span {
   }
 }
 
+
+.protection-result {
+  margin-top: 30px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.045);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.22);
+}
+
+.protection-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.protection-result-header > div:first-child strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 18px;
+  letter-spacing: 0.03em;
+}
+
+.protection-risk-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.protection-risk-badge span {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.protection-risk-badge strong {
+  font-size: 28px;
+}
+
+.protection-result-body {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 24px;
+  padding: 28px 24px;
+}
+
+.result-label {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.protection-result-body h2 {
+  margin: 9px 0;
+  font-size: clamp(24px, 4vw, 38px);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.protection-result-body p {
+  max-width: 620px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.56);
+  line-height: 1.65;
+  font-size: 13px;
+}
+
+.protection-result-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-self: center;
+}
+
+.protection-result-stats div {
+  padding: 14px;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.protection-result-stats span {
+  display: block;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.protection-result-stats strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 22px;
+}
+
+.protection-campaign-signal {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 17px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.protection-campaign-signal span {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.protection-campaign-signal strong {
+  font-size: 15px;
+}
+
+.protection-campaign-signal small {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.protection-result-actions {
+  display: flex;
+  gap: 10px;
+  padding: 18px 24px 22px;
+}
+
+.protection-result-actions button {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+
+.danger-action {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.secondary-action {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.protection-result-actions button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 760px) {
+  .protection-result-body {
+    grid-template-columns: 1fr;
+  }
+
+  .protection-result-stats {
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 520px) {
+  .protection-result-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .protection-result-actions {
+    flex-direction: column;
+  }
+
+  .protection-result-actions button {
+    width: 100%;
+  }
+}
+
