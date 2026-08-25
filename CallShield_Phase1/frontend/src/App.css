@@ -2576,3 +2576,148 @@ footer div span {
   }
 }
 
+
+.protection-result,
+.protection-result * {
+  box-sizing: border-box;
+}
+
+.protection-result-actions {
+  flex-wrap: wrap;
+}
+
+.protection-action-message {
+  margin: 0 24px 16px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.protection-action-message.is-error {
+  border-color: rgba(255, 90, 90, 0.35);
+}
+
+.protection-report-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px 24px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.report-form-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.report-form-heading strong {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.report-form-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.protection-report-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.protection-report-form select,
+.protection-report-form textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.18);
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: normal;
+  outline: none;
+}
+
+.protection-report-form select {
+  min-height: 44px;
+  padding: 0 12px;
+}
+
+.protection-report-form textarea {
+  min-height: 88px;
+  padding: 12px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.protection-report-form select:focus,
+.protection-report-form textarea:focus {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.report-action {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .protection-result-body {
+    grid-template-columns: 1fr;
+  }
+
+  .protection-result-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 8px;
+  }
+
+  .report-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .protection-result-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .protection-result-actions {
+    flex-direction: column;
+  }
+
+  .protection-result-actions button,
+  .report-action {
+    width: 100%;
+  }
+
+  .protection-result-stats div {
+    padding: 10px 8px;
+  }
+
+  .protection-result-stats strong {
+    font-size: 18px;
+  }
+}
+
