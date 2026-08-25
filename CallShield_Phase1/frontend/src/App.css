@@ -2261,3 +2261,138 @@ footer div span {
     flex-direction: column;
   }
 }
+
+.back-protection-button {
+  position: relative;
+  z-index: 5;
+  margin: 24px 0 0 6vw;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.72);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: 180ms ease;
+}
+
+.back-protection-button:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #fff;
+  transform: translateX(-2px);
+}
+
+@media (max-width: 700px) {
+  .back-protection-button {
+    margin-left: 20px;
+  }
+}
+
+
+.intelligence-summary {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1px;
+  margin: 22px 0 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.intelligence-summary-main {
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.intelligence-summary-main strong {
+  display: block;
+  margin: 7px 0 4px;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.intelligence-summary-main > span:last-child {
+  display: block;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.intelligence-summary-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.intelligence-summary-stats > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  padding: 18px;
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.intelligence-summary-stats span,
+.intelligence-summary-campaign span {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.intelligence-summary-stats strong {
+  margin-top: 5px;
+  font-size: 25px;
+}
+
+.intelligence-summary-campaign {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 17px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.intelligence-summary-campaign strong {
+  font-size: 15px;
+}
+
+.intelligence-summary-campaign small {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 11px;
+}
+
+@media (max-width: 760px) {
+  .intelligence-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .intelligence-summary-stats > div {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+}
+
+@media (max-width: 480px) {
+  .intelligence-summary-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .intelligence-summary-stats > div {
+    padding: 14px 10px;
+  }
+
+  .intelligence-summary-stats strong {
+    font-size: 21px;
+  }
+}
+

@@ -182,12 +182,25 @@ function App() {
     setView('intelligence')
   }
 
+  const openProtection = () => {
+    setView('protection')
+    setError('')
+    setMessage('')
+  }
+
   return (
     <>
       {view === 'protection' ? (
         <ProtectionDashboard onOpenIntelligence={openIntelligence} />
       ) : (
         <main className="app">
+      <button
+        className="back-protection-button"
+        onClick={openProtection}
+      >
+        ← BACK TO PROTECTION
+      </button>
+
       <div className="ambient ambient-one" />
       <div className="ambient ambient-two" />
 
@@ -267,6 +280,45 @@ function App() {
                   {riskLevel} RISK
                 </div>
               </div>
+
+              {result && (
+                <div className="intelligence-summary">
+                  <div className="intelligence-summary-main">
+                    <span className="label">CALLSHIELD THREAT ASSESSMENT</span>
+                    <strong>{riskLevel}</strong>
+                    <span>
+                      {riskScore} / 100 · {result.intelligenceConfidence} CONFIDENCE
+                    </span>
+                  </div>
+
+                  <div className="intelligence-summary-stats">
+                    <div>
+                      <span>REPORTS</span>
+                      <strong>{result.reports}</strong>
+                    </div>
+
+                    <div>
+                      <span>REPORTERS</span>
+                      <strong>{result.uniqueReporters}</strong>
+                    </div>
+
+                    <div>
+                      <span>CAMPAIGNS</span>
+                      <strong>{result.campaigns.length}</strong>
+                    </div>
+                  </div>
+
+                  {result.campaigns.length > 0 && (
+                    <div className="intelligence-summary-campaign">
+                      <span>CAMPAIGN SIGNAL</span>
+                      <strong>{result.campaigns[0].name}</strong>
+                      <small>
+                        {result.campaigns[0].confidence}% confidence · {result.campaigns[0].status}
+                      </small>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {error && <div className="message error-message">{error}</div>}
               {message && <div className="message success-message">{message}</div>}
