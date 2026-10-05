@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   blockNumber,
   getNumberIntelligence,
@@ -10,6 +10,7 @@ import {
 } from './api/callshield'
 
 function ProtectionDashboard() {
+  const busy = useRef(false)
   const [number, setNumber] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -22,50 +23,50 @@ function ProtectionDashboard() {
   const [severity, setSeverity] = useState<Severity>('HIGH')
   const [description, setDescription] = useState('')
 
-  const block = async () => {
-    if (!checkedNumber) return
-
-    setActionLoading('block')
+  const setProtection = async (mode: 'block' | 'whitelist') => {
+    if (!checkedNumber || !result || busy.current) return
+    busy.current = true
+    setActionLoading(mode)
     setActionMessage('')
     setActionError('')
 
+    let saved = false
     try {
-      await blockNumber(checkedNumber, 'Blocked from CallShield')
-      setActionMessage('Number blocked by CallShield.')
+      if (mode === 'block') {
+        await blockNumber(checkedNumber, 'Blocked from CallShield')
+      } else {
+        await whitelistNumber(checkedNumber, 'Trusted by CallShield user')
+      }
+      saved = true
       const intelligence = await getNumberIntelligence(checkedNumber)
       setResult(intelligence)
+      setActionMessage(
+        mode === 'block'
+          ? 'Number blocked by CallShield.'
+          : 'Number allowed and added to your trusted list.',
+      )
     } catch (err) {
+      // A saved action must not leave the simulation showing the old decision.
+      if (saved) setResult(null)
+      const message =
+        err instanceof Error ? err.message : 'Unable to update protection.'
       setActionError(
-        err instanceof Error ? err.message : 'Unable to block this number.',
+        saved
+          ? `Protection saved, but intelligence could not refresh. Check the number again. ${message}`
+          : message,
       )
     } finally {
+      busy.current = false
       setActionLoading('')
     }
   }
 
-  const whitelist = async () => {
-    if (!checkedNumber) return
-
-    setActionLoading('whitelist')
-    setActionMessage('')
-    setActionError('')
-
-    try {
-      await whitelistNumber(checkedNumber, 'Trusted by CallShield user')
-      setActionMessage('Number added to your trusted list.')
-      const intelligence = await getNumberIntelligence(checkedNumber)
-      setResult(intelligence)
-    } catch (err) {
-      setActionError(
-        err instanceof Error ? err.message : 'Unable to trust this number.',
-      )
-    } finally {
-      setActionLoading('')
-    }
-  }
+  const block = () => setProtection('block')
+  const whitelist = () => setProtection('whitelist')
 
   const reportNumber = async () => {
-    if (!checkedNumber) return
+    if (!checkedNumber || busy.current) return
+    busy.current = true
 
     setActionLoading('report')
     setActionMessage('')
@@ -87,11 +88,13 @@ function ProtectionDashboard() {
         err instanceof Error ? err.message : 'Unable to submit the report.',
       )
     } finally {
+      busy.current = false
       setActionLoading('')
     }
   }
 
   const checkNumber = async () => {
+    if (busy.current) return
     const value = number.trim().replace(/[^0-9+]/g, '')
 
     if (!value) {
@@ -99,8 +102,11 @@ function ProtectionDashboard() {
       return
     }
 
+    busy.current = true
     setLoading(true)
     setError('')
+    setActionMessage('')
+    setActionError('')
 
     try {
       const intelligence = await getNumberIntelligence(value)
@@ -113,6 +119,7 @@ function ProtectionDashboard() {
           : 'Unable to check this number.',
       )
     } finally {
+      busy.current = false
       setLoading(false)
     }
   }
@@ -169,7 +176,7 @@ function ProtectionDashboard() {
             }}
           />
 
-          <button onClick={checkNumber} disabled={loading}>
+          <button onClick={checkNumber} disabled={loading || actionLoading !== ''}>
             {loading ? 'CHECKING...' : 'CHECK NUMBER'}
             <span>→</span>
           </button>
@@ -242,11 +249,15 @@ function ProtectionDashboard() {
               </div>
             )}
 
+            <p role="status">
+              {result.blocked ? 'BLOCKED' : result.trusted ? 'ALLOWED · TRUSTED' : 'NO PERSONAL RULE'}
+            </p>
+
             <div className="protection-result-actions">
               <button
                 className="danger-action"
                 onClick={block}
-                disabled={actionLoading !== ''}
+                disabled={loading || actionLoading !== ''}
               >
                 {actionLoading === 'block' ? 'BLOCKING...' : 'BLOCK NUMBER'}
               </button>
@@ -254,7 +265,7 @@ function ProtectionDashboard() {
               <button
                 className="secondary-action"
                 onClick={whitelist}
-                disabled={actionLoading !== ''}
+                disabled={loading || actionLoading !== ''}
               >
                 {actionLoading === 'whitelist' ? 'SAVING...' : 'TRUST NUMBER'}
               </button>
@@ -280,7 +291,7 @@ function ProtectionDashboard() {
                     onChange={(event) =>
                       setCategory(event.target.value as ReportCategory)
                     }
-                    disabled={actionLoading !== ''}
+                    disabled={loading || actionLoading !== ''}
                   >
                     <option value="UPI_FRAUD">UPI Fraud</option>
                     <option value="BANK_FRAUD">Bank Fraud</option>
@@ -302,7 +313,7 @@ function ProtectionDashboard() {
                     onChange={(event) =>
                       setSeverity(event.target.value as Severity)
                     }
-                    disabled={actionLoading !== ''}
+                    disabled={loading || actionLoading !== ''}
                   >
                     <option value="LOW">LOW</option>
                     <option value="MEDIUM">MEDIUM</option>
@@ -320,14 +331,14 @@ function ProtectionDashboard() {
                   placeholder="Describe the suspicious activity..."
                   value={description}
                   onChange={(event) => setDescription(event.target.value)}
-                  disabled={actionLoading !== ''}
+                  disabled={loading || actionLoading !== ''}
                 />
               </label>
 
               <button
                 className="report-action"
                 onClick={reportNumber}
-                disabled={actionLoading !== ''}
+                disabled={loading || actionLoading !== ''}
               >
                 {actionLoading === 'report'
                   ? 'SUBMITTING...'
@@ -418,7 +429,13 @@ function ProtectionDashboard() {
           <strong>{checkedNumber || '+91 98765 43210'}</strong>
 
           <span className="incoming-name">
-            {result ? result.risk.classification : 'UNKNOWN CALLER'}
+            {result?.blocked
+              ? 'BLOCKED'
+              : result?.trusted
+                ? 'ALLOWED · TRUSTED'
+                : result
+                  ? result.risk.classification
+                  : 'UNKNOWN CALLER'}
           </span>
 
           <div className="incoming-risk">
@@ -438,9 +455,19 @@ function ProtectionDashboard() {
           )}
 
           <div className="incoming-actions">
-            <button disabled={!result}>BLOCK CALL</button>
-            <button disabled={!result}>ALLOW</button>
+            <button onClick={block} disabled={!result || loading || actionLoading !== ''}>
+              {actionLoading === 'block' ? 'BLOCKING...' : 'BLOCK CALL'}
+            </button>
+            <button onClick={whitelist} disabled={!result || loading || actionLoading !== ''}>
+              {actionLoading === 'whitelist' ? 'SAVING...' : 'ALLOW'}
+            </button>
           </div>
+
+          {(actionMessage || actionError) && (
+            <div role={actionError ? 'alert' : 'status'} className={`protection-action-message ${actionError ? 'is-error' : ''}`}>
+              {actionError || actionMessage}
+            </div>
+          )}
 
           <small className="incoming-disclaimer">
             Simulation only · Android call protection will use this

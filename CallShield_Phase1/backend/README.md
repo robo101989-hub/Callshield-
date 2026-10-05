@@ -32,3 +32,15 @@ The API will be available at `http://localhost:3000`.
 - `DELETE /v1/whitelist/:e164`
 
 This is the Phase 1 foundation. Authentication middleware is intentionally kept as a replaceable boundary until the identity provider is selected.
+
+## Protection API smoke test
+
+Run against a **disposable test database** after building and starting the API:
+
+```bash
+CALLSHIELD_TEST_API=http://127.0.0.1:3000/v1 node scripts/protection-smoke.cjs
+```
+
+This checks health, protection actions for unknown callers, block/trust reversals,
+repeat writes, and report submission. It creates two test phone records and a
+report; discard the test database afterward.

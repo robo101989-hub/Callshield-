@@ -7,6 +7,12 @@ export class BlocklistService {
 
   async block(e164: string, reason?: string) {
     return this.prisma.$transaction(async (tx) => {
+      await tx.phoneNumber.upsert({
+        where: { e164 },
+        update: {},
+        create: { e164 },
+      });
+
       await tx.whitelistedNumber.deleteMany({ where: { e164 } });
 
       return tx.blockedNumber.upsert({
@@ -28,6 +34,12 @@ export class BlocklistService {
 
   async whitelist(e164: string, note?: string) {
     return this.prisma.$transaction(async (tx) => {
+      await tx.phoneNumber.upsert({
+        where: { e164 },
+        update: {},
+        create: { e164 },
+      });
+
       await tx.blockedNumber.deleteMany({ where: { e164 } });
 
       return tx.whitelistedNumber.upsert({
