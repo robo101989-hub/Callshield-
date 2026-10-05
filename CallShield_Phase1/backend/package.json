@@ -11,7 +11,7 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "vercel-build": "prisma generate && prisma migrate deploy && nest build"
+    "vercel-build": "prisma generate && prisma migrate deploy && nest build && node scripts/prepare-vercel-runtime.cjs"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.0",

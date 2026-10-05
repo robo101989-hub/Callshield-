@@ -7,7 +7,7 @@
       "buildCommand": "npm run vercel-build",
       "functions": {
         "src/main.ts": {
-          "includeFiles": "node_modules/{@borewit/text-codec,@lukeed/csprng,@nestjs/common,@nestjs/config,@nestjs/core,@nestjs/platform-express,@prisma/client,@tokenizer/inflate,@tokenizer/token,@types/validator,accepts,append-field,body-parser,buffer-from,busboy,bytes,call-bind-apply-helpers,call-bound,class-transformer,class-validator,concat-stream,content-disposition,content-type,cookie,cookie-signature,cors,debug,depd,dotenv,dotenv-expand,dunder-proto,ee-first,encodeurl,es-define-property,es-errors,es-object-atoms,escape-html,etag,express,fast-safe-stringify,file-type,finalhandler,forwarded,fresh,function-bind,get-intrinsic,get-proto,gopd,has-symbols,hasown,helmet,http-errors,iconv-lite,ieee754,inherits,ipaddr.js,is-promise,iterare,libphonenumber-js,load-esm,lodash,math-intrinsics,media-typer,merge-descriptors,mime-db,mime-types,ms,multer,negotiator,object-assign,object-inspect,on-finished,once,parseurl,path-to-regexp,proxy-addr,qs,range-parser,raw-body,readable-stream,reflect-metadata,router,rxjs,safe-buffer,safer-buffer,send,serve-static,setprototypeof,side-channel,side-channel-list,side-channel-map,side-channel-weakmap,statuses,streamsearch,string_decoder,strtok3,toidentifier,token-types,tslib,type-is,typedarray,uid,uint8array-extras,unpipe,util-deprecate,validator,vary,wrappy,.prisma/client}/**"
+          "includeFiles": "{node_modules/**,node_modules/.prisma/client/**}"
         }
       }
     },
