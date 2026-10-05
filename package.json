@@ -1,0 +1,11 @@
+{
+  "name": "callshield-web",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build": "npm --prefix CallShield_Phase1/frontend run build"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}

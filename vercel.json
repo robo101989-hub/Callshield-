@@ -1,35 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "services": {
-    "backend": {
-      "root": "CallShield_Phase1/backend",
-      "framework": "nestjs",
-      "buildCommand": "npm run vercel-build",
-      "functions": {
-        "src/main.ts": {
-          "includeFiles": "{node_modules/**,node_modules/.prisma/client/**}"
-        }
-      }
-    },
-    "frontend": {
-      "root": "CallShield_Phase1/frontend",
-      "framework": "vite",
-      "buildCommand": "npm run build",
-      "outputDirectory": "dist"
-    }
-  },
+  "framework": "vite",
+  "installCommand": "npm ci --prefix CallShield_Phase1/frontend",
+  "buildCommand": "npm run build",
+  "outputDirectory": "CallShield_Phase1/frontend/dist",
   "rewrites": [
     {
-      "source": "/v1/(.*)",
-      "destination": {
-        "service": "backend"
-      }
+      "source": "/v1/:path*",
+      "destination": "https://callshield-phase1-api.vercel.app/v1/:path*"
     },
     {
       "source": "/(.*)",
-      "destination": {
-        "service": "frontend"
-      }
+      "destination": "/index.html"
     }
   ]
 }
