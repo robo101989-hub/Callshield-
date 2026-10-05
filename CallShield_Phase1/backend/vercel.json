@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nestjs",
+  "buildCommand": "npm run vercel-build",
+  "functions": {
+    "src/main.ts": {
+      "includeFiles": "{node_modules/**,node_modules/.prisma/client/**}"
+    }
+  }
+}
