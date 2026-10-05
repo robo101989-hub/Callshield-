@@ -1,3 +1,5 @@
+import { DemoController } from './modules/checks/demo.controller';
+import { ChecksController } from './modules/checks/checks.controller';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { HealthController } from './common/health.controller';
@@ -10,14 +12,14 @@ import { CampaignsModule } from './modules/campaigns/campaigns.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: ['.env.local', '.env'] }),
     NumbersModule,
     ReportsModule,
     RiskModule,
     BlocklistModule,
     CampaignsModule,
   ],
-  controllers: [HealthController],
+  controllers: [HealthController, ChecksController, DemoController],
   providers: [PrismaService],
 })
 export class AppModule {}

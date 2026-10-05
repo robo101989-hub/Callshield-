@@ -1,3 +1,4 @@
+import ScamDemo from './ScamDemo'
 import { useRef, useState } from 'react'
 import {
   blockNumber,
@@ -141,6 +142,8 @@ function ProtectionDashboard() {
           PROTECTION ENGINE ONLINE
         </div>
       </header>
+
+      <ScamDemo />
 
       <section className="protection-hero">
         <div className="protection-eyebrow">

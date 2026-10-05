@@ -148,3 +148,8 @@ enum Severity {
   HIGH
   CRITICAL
 }
+
+model AiCheckBudget {
+  day DateTime @id @db.Date
+  requests Int @default(0)
+}
