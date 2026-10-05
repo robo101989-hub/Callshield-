@@ -8,6 +8,8 @@ const runtimeRoots = [
   '@nestjs/common', '@nestjs/core', '@nestjs/config',
   '@nestjs/platform-express', '@prisma/client', 'class-transformer',
   'class-validator', 'helmet', 'reflect-metadata', 'rxjs',
+  // Vercel type-checks its TypeScript entrypoint after this build step.
+  '@types/node', 'typescript',
 ];
 const keep = new Set();
 function visit(name, from = base) {
