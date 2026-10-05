@@ -25,3 +25,7 @@ npm-debug.log*
 .vscode/
 .idea/
 .DS_Store
+
+# Vercel local project metadata
+.vercel/
+!CallShield_Phase1/backend/prisma/migrations/**/migration.sql
