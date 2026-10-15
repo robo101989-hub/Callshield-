@@ -19,7 +19,7 @@ Requires JDK 17, Android SDK platform 35 and build-tools 35.0.0.
 ANDROID_SDK_ROOT=/path/to/android-sdk JAVA_HOME=/path/to/jdk17 ./build-apk.sh
 ```
 
-Output: `build/CallShield-1.2.1.apk`. The script creates and reuses a local testing key
+Output: `build/CallShield-1.2.2.apk`. The script creates and reuses a local testing key
 in `build/keys/testing.jks`. Preserve that key for compatible updates to this test APK.
 Build files and the key are excluded from Git. Use a dedicated release signing identity
 before distributing through an app store.

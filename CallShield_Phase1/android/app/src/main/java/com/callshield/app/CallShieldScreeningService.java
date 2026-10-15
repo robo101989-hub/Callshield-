@@ -73,7 +73,7 @@ public final class CallShieldScreeningService extends CallScreeningService {
                     } else if (blocked) {
                         prefs.edit().putBoolean("blocked_" + number, true).apply();
                         block(details, "CallShield blocklist");
-                    } else if ("HIGH".equals(status)) {
+                    } else if ("HIGH_RISK".equals(status) || "DANGEROUS".equals(status)) {
                         prefs.edit().putLong("high_risk_" + number, System.currentTimeMillis()).apply();
                         respondToHighRisk(details, prefs, "High-risk CallShield intelligence");
                     } else {
