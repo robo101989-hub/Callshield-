@@ -1,6 +1,10 @@
 package com.callshield.app;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
@@ -125,8 +129,10 @@ public final class CallShieldScreeningService extends CallScreeningService {
     }
 
     private void respondToHighRisk(Call.Details details, SharedPreferences prefs, String reason) {
-        if (prefs.getBoolean("auto_block_high_risk", false)) block(details, reason);
+        boolean autoBlock = prefs.getBoolean("auto_block_high_risk", false);
+        if (autoBlock) block(details, reason);
         else silence(details, reason);
+        notifyUser(autoBlock ? "Blocked a high-risk call" : "Silenced a high-risk call", reason);
     }
 
     private void allow(Call.Details details, String reason) { respond(details, false, false, false, reason); }
@@ -150,5 +156,23 @@ public final class CallShieldScreeningService extends CallScreeningService {
         } catch (IllegalStateException ignored) {
             // The telecom framework may have timed out; do not attempt a second response.
         }
+    }
+
+    private void notifyUser(String title, String detail) {
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission("android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) return;
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (manager == null) return;
+        final String channel = "callshield_protection";
+        if (Build.VERSION.SDK_INT >= 26) {
+            manager.createNotificationChannel(new NotificationChannel(channel, "Call protection", NotificationManager.IMPORTANCE_HIGH));
+        }
+        Notification.Builder builder = Build.VERSION.SDK_INT >= 26
+            ? new Notification.Builder(this, channel)
+            : new Notification.Builder(this);
+        manager.notify(401, builder.setSmallIcon(android.R.drawable.ic_dialog_alert)
+            .setContentTitle(title)
+            .setContentText("CallShield: " + detail)
+            .setAutoCancel(true)
+            .build());
     }
 }

@@ -143,8 +143,6 @@ function ProtectionDashboard() {
         </div>
       </header>
 
-      <ScamDemo />
-
       <section className="protection-hero">
         <div className="protection-eyebrow">
           <span>CALL PROTECTION</span>
@@ -478,6 +476,8 @@ function ProtectionDashboard() {
           </small>
         </div>
       </section>
+
+      <ScamDemo />
 
       <footer className="protection-footer">
         <div>

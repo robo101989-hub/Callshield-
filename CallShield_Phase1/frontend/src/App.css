@@ -2231,12 +2231,42 @@ footer div span {
     padding: 20px 16px;
   }
 
+  .protection-header {
+    align-items: center;
+  }
+
+  .protection-brand {
+    gap: 10px;
+  }
+
+  .protection-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 18px;
+  }
+
+  .protection-brand strong {
+    font-size: 12px;
+  }
+
+  .protection-brand span {
+    font-size: 8px;
+  }
+
   .protection-hero {
-    margin-bottom: 80px;
+    margin: 50px auto 62px;
   }
 
   .protection-hero h1 {
-    font-size: 48px;
+    font-size: 36px;
+    line-height: 1;
+    letter-spacing: -0.045em;
+  }
+
+  .protection-hero > p {
+    font-size: 15px;
+    line-height: 1.55;
   }
 
   .protection-search {
@@ -2251,10 +2281,12 @@ footer div span {
 
   .protection-search button {
     width: 100%;
+    min-height: 48px;
   }
 
   .protection-card {
-    min-height: 280px;
+    min-height: 0;
+    padding: 22px;
   }
 
   .protection-footer {

@@ -19,6 +19,6 @@ cp build/base.apk build/unsigned.apk
 if [ ! -f build/keys/testing.jks ]; then
     keytool -genkeypair -keystore build/keys/testing.jks -storepass android -keypass android -alias callshield-test -keyalg RSA -keysize 2048 -validity 10000 -dname 'CN=CallShield Testing' >/dev/null 2>&1
 fi
-"$TOOLS/apksigner" sign --ks build/keys/testing.jks --ks-key-alias callshield-test --ks-pass pass:android --key-pass pass:android --out build/CallShield-1.2.0.apk build/aligned.apk
-"$TOOLS/apksigner" verify --verbose build/CallShield-1.2.0.apk
-"$TOOLS/aapt2" dump badging build/CallShield-1.2.0.apk
+"$TOOLS/apksigner" sign --ks build/keys/testing.jks --ks-key-alias callshield-test --ks-pass pass:android --key-pass pass:android --out build/CallShield-1.2.1.apk build/aligned.apk
+"$TOOLS/apksigner" verify --verbose build/CallShield-1.2.1.apk
+"$TOOLS/aapt2" dump badging build/CallShield-1.2.1.apk

@@ -2,7 +2,10 @@ package com.callshield.app;
 
 import android.app.Activity;
 import android.app.role.RoleManager;
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Build;
 import android.content.Intent;
@@ -20,6 +23,8 @@ public class MainActivity extends Activity {
     private LinearLayout error;
     private ProgressBar progress;
     private TextView screeningStatus;
+    private TextView lastDecision;
+    private Button screeningButton;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
@@ -101,7 +106,7 @@ public class MainActivity extends Activity {
         card.setBackgroundColor(Color.rgb(15, 36, 65));
 
         TextView heading = new TextView(this);
-        heading.setText("Native call protection");
+        heading.setText("Call protection");
         heading.setTextColor(Color.WHITE);
         heading.setTextSize(18);
         card.addView(heading);
@@ -112,12 +117,11 @@ public class MainActivity extends Activity {
         screeningStatus.setPadding(0, padding / 3, 0, padding / 2);
         card.addView(screeningStatus);
 
-        Button enable = new Button(this);
-        enable.setText("Enable automatic call screening");
-        enable.setOnClickListener(new View.OnClickListener() {
+        screeningButton = new Button(this);
+        screeningButton.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View view) { requestScreeningRole(); }
         });
-        card.addView(enable);
+        card.addView(screeningButton);
 
         final Switch autoBlock = new Switch(this);
         autoBlock.setText("Automatically block high-confidence scam calls");
@@ -132,8 +136,14 @@ public class MainActivity extends Activity {
         });
         card.addView(autoBlock);
 
+        lastDecision = new TextView(this);
+        lastDecision.setTextColor(Color.rgb(196, 220, 255));
+        lastDecision.setTextSize(13);
+        lastDecision.setPadding(0, padding / 2, 0, 0);
+        card.addView(lastDecision);
+
         TextView disclosure = new TextView(this);
-        disclosure.setText("When enabled, CallShield sends only an incoming caller number to its threat-intelligence service. It does not record call audio. Unknown callers are allowed if intelligence is unavailable.");
+        disclosure.setText("CallShield checks the incoming number against your rules and threat intelligence. It never records call audio. Unknown callers are allowed when there is no high-confidence signal.");
         disclosure.setTextColor(Color.rgb(180, 200, 225));
         disclosure.setTextSize(12);
         disclosure.setPadding(0, padding / 2, 0, 0);
@@ -167,13 +177,29 @@ public class MainActivity extends Activity {
             enabled = roles != null && roles.isRoleHeld(RoleManager.ROLE_CALL_SCREENING);
         }
         screeningStatus.setText(enabled
-            ? "Protection is on. High-risk calls are silenced or blocked according to your choice."
-            : "Protection is off. Enable it to check incoming callers before the phone rings.");
+            ? "Screening is active. High-risk calls are silenced or blocked according to your choice."
+            : "Screening is off. Turn it on to check callers before the phone rings.");
+        screeningButton.setText(enabled ? "Call screening is active" : "Enable call screening");
+        screeningButton.setEnabled(!enabled);
+        screeningButton.setAlpha(enabled ? 0.68f : 1f);
+        SharedPreferences prefs = getSharedPreferences("callshield_screening", Context.MODE_PRIVATE);
+        String last = prefs.getString("last_screening", null);
+        lastDecision.setText(last == null
+            ? "Last activity: Waiting for an incoming call to screen."
+            : "Last activity: " + last);
     }
 
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CALL_SCREENING) updateScreeningStatus();
+        if (requestCode == REQUEST_CALL_SCREENING) {
+            updateScreeningStatus();
+            requestNotificationPermissionIfNeeded();
+        }
+    }
+    private void requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[] { Manifest.permission.POST_NOTIFICATIONS }, 403);
+        }
     }
     private void showError() { web.setVisibility(View.GONE); error.setVisibility(View.VISIBLE); progress.setVisibility(View.GONE); }
     @Override public void onBackPressed() { if (web.canGoBack()) web.goBack(); else super.onBackPressed(); }
